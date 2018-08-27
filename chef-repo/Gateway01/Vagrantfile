@@ -3,8 +3,8 @@
 
 GATEWAY = exec 'netstat -rn | grep 192.168 | grep default | tr -s " " | cut -d" " -f 2'
 
-app_vm_name = "devops-Gateway"
-app_name = "gateway"
+app_vm_name = "Gateway01"
+app_name = "Gateway01"
 app_ip = "192.168.1.1"
 app_netmask = "255.255.255.0"
 
