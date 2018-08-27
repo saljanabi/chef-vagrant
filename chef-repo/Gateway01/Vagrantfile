@@ -26,7 +26,7 @@ Vagrant.configure("2") do |config|
     chef.json = {
       :route => {
         :ip_gateway => GATEWAY,
-        :device => "eth2"
+        :device => "wlp2s0"
       }
     }
     chef.add_recipe "default-route"
