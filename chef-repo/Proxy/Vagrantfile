@@ -2,14 +2,14 @@
 # vi: set ft=ruby :
 
 
-app_vm_name = "devops-Proxy"
-app_name = "proxy"
-app_ip = "192.168.254.250"
-app_netmask = "255.255.255.248"
-app_ip_gateway = "192.168.254.249"
+app_vm_name = "Web02"
+app_name = "Web02"
+app_ip = "192.168.1.4"
+app_netmask = "255.255.255.0"
+app_ip_gateway = "192.168.1.1
 
-Vagrant.configure(2) do |conf|
-  conf.vm.box = "jubianchi/debian-wheezy-chef-i386"
+Vagrant.configure("2") do |config|
+  config.vm.box = "debian/stretch64"
 
   conf.vm.define app_name
   conf.vm.provider :virtualbox do |vb|

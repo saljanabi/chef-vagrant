@@ -2,11 +2,11 @@
 # vi: set ft=ruby :
 
 
-app_vm_name = "devops-Web1"
-app_name = "web1"
-app_ip = "192.168.254.251"
-app_netmask = "255.255.255.248"
-app_ip_gateway = "192.168.254.249"
+app_vm_name = "Web1"
+app_name = "Web1"
+app_ip = "192.168.1.2"
+app_netmask = "255.255.255.0"
+app_ip_gateway = "192.168.1.1
 app_docroot = "./web1_docroot"
 
 Vagrant.configure(2) do |conf|

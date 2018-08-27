@@ -2,15 +2,15 @@
 # vi: set ft=ruby :
 
 
-app_vm_name = "devops-Web2"
-app_name = "web2"
-app_ip = "192.168.254.252"
-app_netmask = "255.255.255.248"
-app_ip_gateway = "192.168.254.249"
-app_docroot = "./web2_docroot"
+app_vm_name = "Web02"
+app_name = "Web02"
+app_ip = "192.168.1.3"
+app_netmask = "255.255.255.0"
+app_ip_gateway = "192.168.1.1
+app_docroot = "./web1_docroot"
 
-Vagrant.configure(2) do |conf|
-  conf.vm.box = "jubianchi/debian-wheezy-chef-i386"
+Vagrant.configure("2") do |config|
+  config.vm.box = "debian/stretch64"
 
   conf.vm.define app_name
   conf.vm.provider :virtualbox do |vb|
