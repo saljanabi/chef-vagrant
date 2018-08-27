@@ -1,0 +1,11 @@
+upstream devops {
+  server 192.168.254.251;
+  server 192.168.254.252;
+}
+server {
+  listen   80;
+
+  location / {
+    proxy_pass http://devops;
+  }
+}

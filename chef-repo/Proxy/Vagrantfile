@@ -1,0 +1,35 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+
+app_vm_name = "devops-Proxy"
+app_name = "proxy"
+app_ip = "192.168.254.250"
+app_netmask = "255.255.255.248"
+app_ip_gateway = "192.168.254.249"
+
+Vagrant.configure(2) do |conf|
+  conf.vm.box = "jubianchi/debian-wheezy-chef-i386"
+
+  conf.vm.define app_name
+  conf.vm.provider :virtualbox do |vb|
+    vb.name = app_vm_name
+  end
+
+  conf.vm.hostname = app_name
+  conf.vm.network "private_network", ip: app_ip, netmask: app_netmask
+  conf.vm.network "forwarded_port", guest: 80, host: 8042
+
+  conf.vm.provision "chef_solo" do |chef|
+    chef.cookbooks_path = "../chef-repo/cookbooks"
+    chef.roles_path = "../chef-repo/roles"
+    chef.json = {
+      :route => {
+        :ip_gateway => app_ip_gateway
+      }
+    }
+    chef.add_recipe "nginx"
+    chef.add_recipe "default-route"
+    chef.add_role("load-balancing")
+  end
+end
