@@ -20,7 +20,7 @@ iptables -A INPUT -i lo -j ACCEPT
 iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 iptables -A INPUT -m state --state NEW ! -i "$web" -j ACCEPT
 iptables -A FORWARD -i "$web" -o "$lan" -m state --state ESTABLISHED,RELATED -j ACCEPT
-iptables -A FORWARD -i "$lan" -p tcp --dport 80 -d 192.168.254.250 -j ACCEPT
+iptables -A FORWARD -i "$lan" -p tcp --dport 80 -d 192.168.1.4 -j ACCEPT
 
 # Allow outgoing connections from the LAN side.
 iptables -A FORWARD -i "$lan" -o "$web" -j ACCEPT
