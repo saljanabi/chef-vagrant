@@ -1,0 +1,13 @@
+#!/bin/sh
+PATH=/usr/sbin:/sbin:/bin:/usr/bin
+lan="eth1"
+web="eth0"
+iptables -F
+iptables -t nat -F
+iptables -t mangle -F
+ippables -X
+
+iptables -A FORWARD -i "$lan" -o "$web" -j ACCEPT
+iptables -t nat -A PREROUTING -p tcp --dport 80 -j DNAT --to-detination 192.168.1.4:80
+iptables -t nat -A POSTROUTING -o "$web" -j MASQUERADE
+echo 1 > /proc/sys/net/ipv4/ip_forward
