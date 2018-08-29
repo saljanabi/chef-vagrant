@@ -9,7 +9,8 @@ app_ip_gateway = "192.168.1.1"
 app_docroot = "./docroot"
 
 Vagrant.configure("2") do |conf|
-  conf.vm.box = "debian/stretch64"
+
+conf.vm.box = "debian/stretch64"
 
 conf.vm.define app_name
   conf.vm.provider :virtualbox do |vb|
