@@ -6,7 +6,7 @@ app_name = "Web01"
 app_ip = "192.168.1.2"
 app_netmask = "255.255.255.0"
 app_ip_gateway = "192.168.1.1"
-app_docroot = "./web1_docroot"
+app_docroot = "./docroot"
 
 Vagrant.configure("2") do |conf|
   conf.vm.box = "debian/stretch64"
