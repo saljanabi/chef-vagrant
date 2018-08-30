@@ -31,5 +31,7 @@ conf.vm.hostname = app_name
       }
     }
     chef.add_role("web-server")
+    chef.add_recipe "apache2"
+    chef.add_recipe "default-route"
   end
 end
