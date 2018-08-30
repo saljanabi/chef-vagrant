@@ -19,7 +19,7 @@ conf.vm.box = "debian/stretch64"
   end
 
   conf.vm.hostname = app_name
-  conf.vm.synced_folder app_docroot, "/var/www", :mount_options => ["dmode=777", "fmode=666"]
+  conf.vm.synced_folder "Web02_docroot", "/var/www", :mount_options => ["dmode=777", "fmode=666"]
 
   conf.vm.network "private_network", ip: app_ip, netmask: app_netmask
 
@@ -32,5 +32,7 @@ conf.vm.box = "debian/stretch64"
       }
     }
     chef.add_role("web-server")
+    chef.add_recipe "apache2"
+    chef.add_recipe "default-route"
   end
 end

@@ -18,7 +18,7 @@ conf.vm.define app_name
   end
 
 conf.vm.hostname = app_name
-  conf.vm.synced_folder app_docroot, "/var/www", :mount_options => ["dmode=777", "fmode=666"]
+  conf.vm.synced_folder "Web01_docroot", "/var/www", :mount_options => ["dmode=777", "fmode=666"]
 
   conf.vm.network "private_network", ip: app_ip, netmask: app_netmask
 
