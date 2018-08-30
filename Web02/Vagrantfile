@@ -7,7 +7,7 @@ app_name = "Web02"
 app_ip = "192.168.1.3"
 app_netmask = "255.255.255.0"
 app_ip_gateway = "192.168.1.1"
-app_docroot = "./docroot"
+app_docroot = "./Web02_docroot"
 
 Vagrant.configure("2") do |conf|
 
@@ -19,7 +19,8 @@ conf.vm.box = "debian/stretch64"
   end
 
   conf.vm.hostname = app_name
-  conf.vm.synced_folder "Web02_docroot", "/var/www", :mount_options => ["dmode=777", "fmode=666"]
+  conf.vm.synced_folder app_docroot, "/var/www", :mount_options => ["dmode=777", "fmode=666"]
+  conf.vbguest.installer_arguments = ['--nox11', '-- --do']
 
   conf.vm.network "private_network", ip: app_ip, netmask: app_netmask
 
