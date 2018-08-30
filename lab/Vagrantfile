@@ -1,0 +1,151 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+ 
+devops = {
+  :app_ip_Gateway01 => "10.0.2.2",
+  :app_netmask => "255.255.255.0",
+  :Web01 => {
+    :app_vm_name => "Web01",
+    :app_name => "Web01",
+    :app_ip => "192.168.1.2",
+    :app_docroot => "../Web01/Web01_docroot"
+  },
+  :Web02 => {
+    :app_vm_name => "Web02",
+    :app_name => "Web02",
+    :app_ip => "192.168.1.3",
+    :app_docroot => "../Web02/Web02_docroot"
+  },
+  :Gateway01 => {
+    :app_vm_name => "Gateway01",
+    :app_name => "Gateway01",
+    :app_ip => "192.168.1.1"
+  },
+  :Proxy => {
+    :app_vm_name => "Proxy",
+    :app_name => "Proxy",
+    :app_ip => "192.168.1.4"
+  }
+}
+
+Vagrant.configure(2) do |conf|
+
+  #
+  # WEB 1
+  #
+  conf.vm.define devops[:Web01][:app_name] do |Web01|  
+    Web01.vm.box = "debian/stretch64"
+
+    Web01.vm.provider :virtualbox do |vb|
+      vb.name = devops[:Web01][:app_vm_name]
+    end
+
+    Web01.vm.hostname = devops[:Web01][:app_name]
+    Web01.vm.synced_folder devops[:Web01][:app_docroot], "/var/www", :mount_options => ["dmode=777", "fmode=666"]
+
+    Web01.vm.network "private_network", ip: devops[:Web01][:app_ip], netmask: devops[:app_netmask]
+
+    Web01.vm.provision "chef_solo" do |chef|
+      chef.cookbooks_path = "../chef-repo/cookbooks"
+      chef.json = {
+        :apache => {
+          :default_site_enabled => true
+        },
+        :route => {
+    	    :ip_gateway => devops[:app_ip_Gateway01]
+        }
+      }
+      chef.add_recipe "apache2"
+      chef.add_recipe "default-route"
+    end
+  end
+
+  #
+  # WEB 2
+  #
+  conf.vm.define devops[:Web02][:app_name] do |Web02|
+    Web02.vm.box = "debian/stretch64"
+
+    Web02.vm.provider :virtualbox do |vb|
+      vb.name = devops[:Web02][:app_vm_name]
+    end
+
+    Web02.vm.hostname = devops[:Web02][:app_name]
+    Web02.vm.synced_folder devops[:Web02][:app_docroot], "/var/www", :mount_options => ["dmode=777", "fmode=666"]
+
+    Web02.vm.network "private_network", ip: devops[:Web02][:app_ip], netmask: devops[:app_netmask]
+
+    Web02.vm.provision "chef_solo" do |chef|
+      chef.cookbooks_path = "../chef-repo/cookbooks"
+        chef.json = {
+          :apache => {
+            :default_site_enabled => true
+          },
+          :route => {
+      	    :ip_gateway => devops[:app_ip_Gateway01]
+        }
+      }
+      chef.add_recipe "apache2"
+      chef.add_recipe "default-route"
+    end
+  end
+
+  #
+  # Gateway01
+  #
+  Gateway01 = exec 'netstat -rn | grep 192.168 | grep default | tr -s " " | cut -d" " -f 2'
+
+  conf.vm.define devops[:Gateway01][:app_name] do |Gateway01|
+    Gateway01.vm.box = "debian/stretch64"
+
+    Gateway01.vm.define devops[:Gateway01][:app_name]
+    conf.vm.provider :virtualbox do |vb|
+      vb.name = devops[:Gateway01][:app_vm_name]
+    end
+
+    Gateway01.vm.hostname = devops[:Gateway01][:app_name]
+    Gateway01.vm.network "private_network", ip: devops[:Gateway01][:app_ip], netmask: devops[:app_netmask]
+    Gateway01.vm.network "public_network"
+
+    Gateway01.vm.provision "chef_solo" do |chef|
+      chef.cookbooks_path = "../chef-repo/cookbooks"
+      chef.json = {
+        :route => {
+          :ip_gateway => Gateway01,
+	        :device => "eth2"
+        }
+      }
+      chef.add_recipe "default-route"
+      chef.add_recipe "router"
+    end
+  end
+
+  #
+  # PROXY
+  #
+  conf.vm.define devops[:proxy][:app_name] do |proxy|
+    proxy.vm.box = "debian/stretch64"
+
+    proxy.vm.define devops[:proxy][:app_name]
+    proxy.vm.provider :virtualbox do |vb|
+      vb.name = devops[:proxy][:app_vm_name]
+    end
+
+    proxy.vm.hostname = devops[:Gateway01][:app_name]
+    proxy.vm.network "private_network", ip: devops[:Gateway01][:app_ip], netmask: devops[:app_netmask]
+    proxy.vm.network "forwarded_port", guest: 80, host: 8042
+
+    proxy.vm.provision "chef_solo" do |chef|
+      chef.cookbooks_path = "../chef-repo/cookbooks"
+        chef.json = {
+          :route => {
+      	  :ip_gateway => devops[:app_ip_Gateway01]
+        }
+      }
+      chef.add_recipe "nginx"
+      chef.add_recipe "default-route"
+      chef.roles_path = "../chef-repo/roles"
+      chef.add_role("devops_load_balancing")
+    end
+  end
+end
